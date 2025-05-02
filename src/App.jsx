@@ -1,14 +1,22 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { saveGoals, loadGoals } from './utils/storage';
+import GoalItem from './components/GoalItem';
 
 export default function App() {
   const [goals, setGoals] = useState([]);
   const [input, setInput] = useState('');
 
   useEffect(() => {
-    setGoals(loadGoals());
+    const stored = loadGoals();
+    const upgraded = stored.map(goal =>
+      typeof goal === 'string'
+        ? { id: crypto.randomUUID(), text: goal, completed: false }
+        : goal
+    );
+    setGoals(upgraded);
+    saveGoals(upgraded);
   }, []);
+
 
   useEffect(() => {
     saveGoals(goals);
@@ -17,17 +25,36 @@ export default function App() {
   const addGoal = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
-    setGoals([...goals, trimmed]);
+    const newGoal = {
+      id: Date.now(),
+      text: trimmed,
+      completed: false,
+    }
+    setGoals([...goals, newGoal]);
     setInput('');
   };
-  // trigger Tailwind to include these classes: text-green-600 text-blue-600 bg-white
+
+  const toggleGoal = (id) => {
+    console.log('Toggling goal with id:', id);
+    console.log('Goals state:', goals);
+
+    const index = goals.findIndex(g => g.id === id);
+    if (index === -1) {
+      console.error('Goal not found for id:', id);
+      return;
+    }
+
+    const updated = [...goals];
+    updated[index].completed = !updated[index].completed;
+    setGoals(updated);
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow space-y-6">
-      <h1 className="text-3xl font-bold text-blue-700 mb-4">
-          Add Goal
-        </h1>
+        <h1 className="text-3xl font-extrabold text-center text-blue-600">Add Goal</h1>
+
         <div className="flex gap-2">
           <input
             type="text"
@@ -46,13 +73,8 @@ export default function App() {
         </div>
 
         <ul className="space-y-2">
-          {goals.map((goal, idx) => (
-            <li
-              key={idx}
-              className="bg-gray-50 border border-gray-200 rounded-md px-4 py-2 shadow-sm text-gray-800"
-            >
-              {goal}
-            </li>
+          {goals.map(goal => (
+            <GoalItem key={goal.id} goal={goal} toggleGoal={toggleGoal} />
           ))}
         </ul>
       </div>
