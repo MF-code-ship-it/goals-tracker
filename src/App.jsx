@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { saveGoals, loadGoals } from './utils/storage';
 import GoalItem from './components/GoalItem';
+import AddGoalForm from './components/AddGoalForm';
 
 export default function App() {
   const [goals, setGoals] = useState([]);
@@ -55,22 +56,7 @@ export default function App() {
       <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow space-y-6">
         <h1 className="text-3xl font-extrabold text-center text-blue-600">Add Goal</h1>
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter a goal..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addGoal()}
-          />
-          <button
-            onClick={addGoal}
-            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
-          >
-            Add
-          </button>
-        </div>
+        <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
 
         <ul className="space-y-2">
           {goals.map(goal => (
