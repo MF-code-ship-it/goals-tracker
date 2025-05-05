@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { saveGoals, loadGoals } from './utils/storage';
 import GoalItem from './components/GoalItem';
 import AddGoalForm from './components/AddGoalForm';
@@ -6,6 +6,7 @@ import AddGoalForm from './components/AddGoalForm';
 export default function App() {
   const [goals, setGoals] = useState([]);
   const [input, setInput] = useState('');
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     const stored = loadGoals();
@@ -15,12 +16,17 @@ export default function App() {
         : goal
     );
     setGoals(upgraded);
-    saveGoals(upgraded);
+    if (stored.some(g => typeof g === 'string')) {
+      saveGoals(upgraded);
+    }
   }, []);
 
-
   useEffect(() => {
-    saveGoals(goals);
+    if (hasMounted.current) {
+      saveGoals(goals);
+    } else {
+      hasMounted.current = true;
+    }
   }, [goals]);
 
   const addGoal = () => {
