@@ -56,6 +56,10 @@ export default function App() {
     setGoals(updated);
   };
 
+  const deleteGoal = (id) => {
+    const updated = goals.filter(goal => goal.id !== id);
+    setGoals(updated);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -66,7 +70,7 @@ export default function App() {
 
         <ul className="space-y-2">
           {goals.map(goal => (
-            <GoalItem key={goal.id} goal={goal} toggleGoal={toggleGoal} />
+            <GoalItem key={goal.id} goal={goal} toggleGoal={() => toggleGoal(goal.id)} onDelete={() => deleteGoal(goal.id)} />
           ))}
         </ul>
       </div>
