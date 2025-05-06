@@ -42,8 +42,6 @@ export default function App() {
   };
 
   const toggleGoal = (id) => {
-    console.log('Toggling goal with id:', id);
-    console.log('Goals state:', goals);
 
     const index = goals.findIndex(g => g.id === id);
     if (index === -1) {
