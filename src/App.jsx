@@ -62,7 +62,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow space-y-6">
-        <h1 className="text-3xl font-extrabold text-center text-blue-600">Add Goal</h1>
+        <h1 className="text-3xl font-extrabold text-center text-blue-600">{import.meta.env.VITE_ENV_LABEL}</h1>
 
         <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
 

@@ -8,6 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "preview:prod": "npm run build && npm run preview",
+    "preview:dev": "npm run dev",
     "tailwind": "tailwindcss -i ./src/index.css -o ./src/tailwind.output.css --watch"
   },
   "dependencies": {
