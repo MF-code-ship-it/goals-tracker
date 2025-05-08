@@ -25,3 +25,6 @@ dist-ssr
 
 # Env: Production
 .env
+# Env: local dev
+.env.*
+.vercel/
