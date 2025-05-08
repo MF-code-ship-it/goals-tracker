@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { saveGoals, loadGoals } from './utils/storage';
 import GoalItem from './components/GoalItem';
 import AddGoalForm from './components/AddGoalForm';
+import Header from './components/Header'
 
 export default function App() {
   const [goals, setGoals] = useState([]);
   const [input, setInput] = useState('');
   const hasMounted = useRef(false);
+  const [activeTab, setActiveTab] = useState('Goals');
+  const envLabel = import.meta.env.VITE_ENV_LABEL;
 
   useEffect(() => {
     const stored = loadGoals();
@@ -60,18 +63,32 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow space-y-6">
-        <h1 className="text-3xl font-extrabold text-center text-blue-600">{import.meta.env.VITE_ENV_LABEL}</h1>
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow space-y-6">
+          <h1 className="text-3xl font-extrabold text-center text-blue-600">
+            {activeTab === 'Goals' ? envLabel : 'Archived'}
+          </h1>
 
-        <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
+          {activeTab === 'Goals' && (
+            <>
+              <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
+              <ul className="space-y-2">
+                {goals.map(goal => (
+                  <GoalItem key={goal.id} goal={goal} toggleGoal={() => toggleGoal(goal.id)} onDelete={() => deleteGoal(goal.id)} />
+                ))}
+              </ul>
+            </>
+          )}
 
-        <ul className="space-y-2">
-          {goals.map(goal => (
-            <GoalItem key={goal.id} goal={goal} toggleGoal={() => toggleGoal(goal.id)} onDelete={() => deleteGoal(goal.id)} />
-          ))}
-        </ul>
-      </div>
+          {activeTab === 'Archived' && (
+            <div className="text-center text-gray-600">
+              <p>Archived Placeholder</p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
