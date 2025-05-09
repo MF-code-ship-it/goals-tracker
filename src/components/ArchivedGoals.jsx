@@ -1,6 +1,6 @@
 import GoalItem from './GoalItem';
 
-export default function ArchivedGoals({ goals = [], onDelete }) {
+export default function ArchivedGoals({ goals = [], onDelete, onUnArchive }) {
 
     const archivedGoals = goals.filter(goal => goal.archived);
 
@@ -18,6 +18,7 @@ export default function ArchivedGoals({ goals = [], onDelete }) {
                             key={goal.id}
                             goal={goal}
                             onDelete={() => onDelete(goal.id)}
+                            onUnArchive={() => onUnArchive(goal.id)}
                             archivedView={true}>
                         </GoalItem>
                     ))

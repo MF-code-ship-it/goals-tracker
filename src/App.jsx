@@ -71,6 +71,13 @@ export default function App() {
     setGoals(updated)
   };
 
+    const unArchiveGoal = (id) => {
+    const updated = goals.map(goal =>
+      goal.id === id ? { ...goal, archived: false } : goal
+    );
+    setGoals(updated)
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -102,6 +109,7 @@ export default function App() {
             <ArchivedGoals
               goals={goals}
               onDelete={deleteGoal}
+              onUnArchive={unArchiveGoal}
             />
           )}
         </div>
