@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { saveGoals, loadGoals } from './utils/storage';
 import GoalItem from './components/GoalItem';
+import ArchivedGoals from './components/ArchivedGoals';
 import AddGoalForm from './components/AddGoalForm';
 import Header from './components/Header'
 
@@ -15,7 +16,7 @@ export default function App() {
     const stored = loadGoals();
     const upgraded = stored.map(goal =>
       typeof goal === 'string'
-        ? { id: crypto.randomUUID(), text: goal, completed: false }
+        ? { id: crypto.randomUUID(), text: goal, completed: false, archived: true }
         : goal
     );
     setGoals(upgraded);
@@ -39,6 +40,7 @@ export default function App() {
       id: Date.now(),
       text: trimmed,
       completed: false,
+      archived: false,
     }
     setGoals([...goals, newGoal]);
     setInput('');
@@ -62,6 +64,13 @@ export default function App() {
     setGoals(updated);
   };
 
+  const archiveGoal = (id) => {
+    const updated = goals.map(goal =>
+      goal.id === id ? { ...goal, archived: true } : goal
+    );
+    setGoals(updated)
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -74,18 +83,26 @@ export default function App() {
           {activeTab === 'Goals' && (
             <>
               <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
-              <ul className="space-y-2">
-                {goals.map(goal => (
-                  <GoalItem key={goal.id} goal={goal} toggleGoal={() => toggleGoal(goal.id)} onDelete={() => deleteGoal(goal.id)} />
-                ))}
-              </ul>
+              <ol className="space-y-2">
+                {goals
+                  .filter(goal => !goal.archived)
+                  .map(goal => (
+                      <GoalItem
+                        key={goal.id}
+                        goal={goal}
+                        toggleGoal={() => toggleGoal(goal.id)}
+                        onDelete={() => deleteGoal(goal.id)}
+                        onArchive={() => archiveGoal(goal.id)} />
+                  ))}
+              </ol>
             </>
           )}
 
           {activeTab === 'Archived' && (
-            <div className="text-center text-gray-600">
-              <p>Archived Placeholder</p>
-            </div>
+            <ArchivedGoals
+              goals={goals}
+              onDelete={deleteGoal}
+            />
           )}
         </div>
       </main>
