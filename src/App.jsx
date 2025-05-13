@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useGoals } from './hooks/useGoals';
 import AddGoalForm from './components/AddGoalForm';
-import ArchivedGoals from './components/ArchivedGoals';
-import GoalItem from './components/GoalItem';
+import GoalList from './components/GoalList';
 import Header from './components/Header';
 
 export default function App() {
@@ -35,28 +34,28 @@ export default function App() {
 
           {activeTab === 'Goals' && (
             <>
-              <AddGoalForm input={input} setInput={setInput} onAdd={addGoal} />
-              <ol className="space-y-2">
-                {goals
-                  .filter(goal => !goal.archived)
-                  .map(goal => (
-                      <GoalItem
-                        key={goal.id}
-                        goal={goal}
-                        toggleGoal={() => dispatch({ type: 'TOGGLE', payload: goal.id })}
-                        onDelete={() => dispatch({ type: 'DELETE', payload: goal.id })}
-                        onArchive={() => dispatch({ type: 'ARCHIVE', payload: goal.id })} 
-                        />
-                  ))}
-              </ol>
+              <AddGoalForm
+                input={input}
+                setInput={setInput}
+                onAdd={addGoal}
+              />
+              <GoalList
+                goals={goals}
+                onToggle={id => dispatch({ type: 'TOGGLE', payload: id })}
+                onDelete={id => dispatch({ type: 'DELETE', payload: id })}
+                onArchive={id => dispatch({ type: 'ARCHIVE', payload: id })}
+                showArchived={false}
+              />
             </>
           )}
 
           {activeTab === 'Archived' && (
-            <ArchivedGoals
-              goals={goals}
+            <GoalList
+              goals={goals.filter(goal => goal.archived)}
               onDelete={id => dispatch({ type: 'DELETE', payload: id })}
               onUnArchive={id => dispatch({ type: 'UNARCHIVE', payload: id })}
+              showArchived={true}
+              archivedView={true}
             />
           )}
         </div>

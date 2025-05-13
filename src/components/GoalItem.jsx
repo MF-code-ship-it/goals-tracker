@@ -1,4 +1,4 @@
-export default function GoalItem({ goal, toggleGoal, onDelete, onArchive, onUnArchive, archivedView = false }) {
+export default function GoalItem({ goal, onToggle, onDelete, onArchive, onUnArchive, archivedView = false }) {
     return (
         <li className="flex justify-between items-center bg-gray-50 border border-gray-200 rounded-md px-4 py-2 shadow-sm">
             <span className={`${goal.completed ? 'text-red-500 line-through' : 'text-gray-800'}`}>
@@ -6,7 +6,8 @@ export default function GoalItem({ goal, toggleGoal, onDelete, onArchive, onUnAr
             </span>
             <div className="flex gap-2">
                 {!archivedView && (
-                    <button onClick={() => toggleGoal(goal.id)}
+                    <button
+                        onClick={() => onToggle(goal.id)}
                         className={`ml-4 px-2 py-1 text-sm border rounded ${goal.completed
                             ? 'text-green-600 border-green-600 bg-green-100 hover:bg-green-200'
                             : 'text-blue-600 border-blue-600 bg-blue-100 hover:bg-blue-200'
@@ -41,7 +42,6 @@ export default function GoalItem({ goal, toggleGoal, onDelete, onArchive, onUnAr
                     </button>
                 )}
             </div>
-
         </li >
     );
 }
