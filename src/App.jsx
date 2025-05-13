@@ -1,64 +1,15 @@
-import React, { useReducer, useState, useEffect, useRef } from 'react';
-import { saveGoals, loadGoals } from './utils/storage';
-import GoalItem from './components/GoalItem';
-import ArchivedGoals from './components/ArchivedGoals';
+import { useState } from 'react';
+import { useGoals } from './hooks/useGoals';
 import AddGoalForm from './components/AddGoalForm';
+import ArchivedGoals from './components/ArchivedGoals';
+import GoalItem from './components/GoalItem';
 import Header from './components/Header';
 
-const initialState = [];
-
-function goalsReducer(state, action) {
-  switch (action.type) {
-    case 'LOAD':
-      return action.payload;
-    case 'ADD':
-      return [...state, action.payload];
-    case 'TOGGLE':
-      return state.map(goal =>
-        goal.id === action.payload ? { ...goal, completed: !goal.completed } : goal
-      );
-    case 'DELETE':
-      return state.filter(goal => goal.id !== action.payload);
-    case 'ARCHIVE':
-      return state.map(goal =>
-        goal.id === action.payload ? { ...goal, archived: true } : goal
-      );
-    case 'UNARCHIVE':
-      return state.map(goal =>
-        goal.id === action.payload ? { ...goal, archived: false } : goal
-      );
-    default:
-      throw new Error(`Unknown action type: ${action.type}`);
-  }
-}
-
 export default function App() {
-  const [goals, dispatch] = useReducer(goalsReducer, initialState);
+  const {goals, dispatch} = useGoals();
   const [input, setInput] = useState('');
-  const hasMounted = useRef(false);
   const [activeTab, setActiveTab] = useState('Goals');
   const envLabel = import.meta.env.VITE_ENV_LABEL;
-
-  useEffect(() => {
-    const stored = loadGoals();
-    const upgraded = stored.map(goal =>
-      typeof goal === 'string'
-        ? { id: crypto.randomUUID(), text: goal, completed: false, archived: true }
-        : goal
-    );
-    dispatch({ type: 'LOAD', payload: upgraded });
-    if (stored.some(g => typeof g === 'string')) {
-      saveGoals(upgraded);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (hasMounted.current) {
-      saveGoals(goals);
-    } else {
-      hasMounted.current = true;
-    }
-  }, [goals]);
 
   const addGoal = () => {
     const trimmed = input.trim();
