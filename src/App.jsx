@@ -1,37 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { saveGoals, loadGoals } from './utils/storage';
-import GoalItem from './components/GoalItem';
-import ArchivedGoals from './components/ArchivedGoals';
+import { useState } from 'react';
+import { useGoals } from './hooks/useGoals';
 import AddGoalForm from './components/AddGoalForm';
-import Header from './components/Header'
+import ArchivedGoals from './components/ArchivedGoals';
+import GoalItem from './components/GoalItem';
+import Header from './components/Header';
 
 export default function App() {
-  const [goals, setGoals] = useState([]);
+  const {goals, dispatch} = useGoals();
   const [input, setInput] = useState('');
-  const hasMounted = useRef(false);
   const [activeTab, setActiveTab] = useState('Goals');
   const envLabel = import.meta.env.VITE_ENV_LABEL;
-
-  useEffect(() => {
-    const stored = loadGoals();
-    const upgraded = stored.map(goal =>
-      typeof goal === 'string'
-        ? { id: crypto.randomUUID(), text: goal, completed: false, archived: true }
-        : goal
-    );
-    setGoals(upgraded);
-    if (stored.some(g => typeof g === 'string')) {
-      saveGoals(upgraded);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (hasMounted.current) {
-      saveGoals(goals);
-    } else {
-      hasMounted.current = true;
-    }
-  }, [goals]);
 
   const addGoal = () => {
     const trimmed = input.trim();
@@ -41,41 +19,9 @@ export default function App() {
       text: trimmed,
       completed: false,
       archived: false,
-    }
-    setGoals([...goals, newGoal]);
+    };
+    dispatch({ type: 'ADD', payload: newGoal });
     setInput('');
-  };
-
-  const toggleGoal = (id) => {
-
-    const index = goals.findIndex(g => g.id === id);
-    if (index === -1) {
-      console.error('Goal not found for id:', id);
-      return;
-    }
-
-    const updated = [...goals];
-    updated[index].completed = !updated[index].completed;
-    setGoals(updated);
-  };
-
-  const deleteGoal = (id) => {
-    const updated = goals.filter(goal => goal.id !== id);
-    setGoals(updated);
-  };
-
-  const archiveGoal = (id) => {
-    const updated = goals.map(goal =>
-      goal.id === id ? { ...goal, archived: true } : goal
-    );
-    setGoals(updated)
-  };
-
-    const unArchiveGoal = (id) => {
-    const updated = goals.map(goal =>
-      goal.id === id ? { ...goal, archived: false } : goal
-    );
-    setGoals(updated)
   };
 
   return (
@@ -97,9 +43,10 @@ export default function App() {
                       <GoalItem
                         key={goal.id}
                         goal={goal}
-                        toggleGoal={() => toggleGoal(goal.id)}
-                        onDelete={() => deleteGoal(goal.id)}
-                        onArchive={() => archiveGoal(goal.id)} />
+                        toggleGoal={() => dispatch({ type: 'TOGGLE', payload: goal.id })}
+                        onDelete={() => dispatch({ type: 'DELETE', payload: goal.id })}
+                        onArchive={() => dispatch({ type: 'ARCHIVE', payload: goal.id })} 
+                        />
                   ))}
               </ol>
             </>
@@ -108,8 +55,8 @@ export default function App() {
           {activeTab === 'Archived' && (
             <ArchivedGoals
               goals={goals}
-              onDelete={deleteGoal}
-              onUnArchive={unArchiveGoal}
+              onDelete={id => dispatch({ type: 'DELETE', payload: id })}
+              onUnArchive={id => dispatch({ type: 'UNARCHIVE', payload: id })}
             />
           )}
         </div>
