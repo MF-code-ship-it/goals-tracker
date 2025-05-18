@@ -15,9 +15,3 @@ If you are developing a production application, we recommend using TypeScript wi
 
 https://goals-tracker-beta.vercel.app
 
-## dev scripts:
-simulate prod run locally
-npm run preview:prod 
-
-dev run locally
-npm run preview:dev
